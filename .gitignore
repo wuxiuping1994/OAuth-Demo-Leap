@@ -1,0 +1,39 @@
+## .NET / ASP.NET Core
+
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+packages/
+.nuget/
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# Publish output
+publish/
+**/publish/
+
+# Environment / secrets
+appsettings.*.json
+!appsettings.json
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
