@@ -11,12 +11,14 @@ namespace OAuthDemoLeap.Controllers
         private readonly OAuthConfiguration _config;
         private readonly PkceService _pkceService;
         private readonly TokenExchangeService _tokenExchangeService;
+        private readonly TokenValidationService _tokenValidationService;
 
-        public OAuthController(IOptions<OAuthConfiguration> options, PkceService pkceService, TokenExchangeService tokenExchangeService)
+        public OAuthController(IOptions<OAuthConfiguration> options, PkceService pkceService, TokenExchangeService tokenExchangeService, TokenValidationService tokenValidationService)
         {
             _config = options.Value;
             _pkceService = pkceService;
             _tokenExchangeService = tokenExchangeService;
+            _tokenValidationService = tokenValidationService;
         }
 
         [HttpGet("/login")]
@@ -57,6 +59,11 @@ namespace OAuthDemoLeap.Controllers
             try
             {  
                 var tokenResponse = await _tokenExchangeService.ExchangeAsync(code, codeVerifier);
+                var idTokenValidated = await _tokenValidationService.ValidateToken(tokenResponse.IdToken!);
+
+                if (!idTokenValidated)
+                    return Unauthorized("Invalid id_token");
+
                 HttpContext.Session.SetString("access_token", tokenResponse.AccessToken!);
                 HttpContext.Session.SetString("id_token", tokenResponse.IdToken!);
             }
