@@ -11,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<PkceService>();
+builder.Services.AddHttpClient<TokenExchangeService>();
 
 builder.Services.Configure<OAuthConfiguration>(
     builder.Configuration.GetSection("OAuthConfiguration"));
