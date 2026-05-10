@@ -86,8 +86,18 @@ namespace OAuthDemoLeap.Controllers
             var handler = new JsonWebTokenHandler();
             var jwt = handler.ReadJsonWebToken(idToken);
             var claims = jwt.Claims.ToDictionary(c => c.Type, c => c.Value);
-            
+
             return Ok(claims);
+        }
+
+        [HttpGet("/api/data")]
+        public IActionResult GetData()
+        {
+            var storedAccessToken = HttpContext.Session.GetString("access_token");
+            if (storedAccessToken == null)
+                return Unauthorized();
+                
+            return Ok("You're authorized");
         }
     }
 }
