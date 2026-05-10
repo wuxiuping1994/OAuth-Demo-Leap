@@ -1,10 +1,23 @@
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Options;
+using OAuthDemoLeap.Models;
 
 namespace OAuthDemoLeap.Services;
 
 public class PkceService
 {
+    private readonly OAuthConfiguration _config;
+
+    public PkceService(IOptions<OAuthConfiguration> options)
+    {
+        _config = options.Value;
+    }
+
+    public string GenerateRedirectUri(string codeChallenge, string state)
+    {
+        return $"{_config.AuthorizationEndpoint}?response_type=code&client_id={_config.ClientId}&redirect_uri={Uri.EscapeDataString(_config.RedirectUri!)}&scope={_config.Scope}&code_challenge={codeChallenge}&state={state}&code_challenge_method=S256";
+    }
     // Generates a cryptographically random code_verifier and its S256 code_challenge
     public (string CodeVerifier, string CodeChallenge) GeneratePkce()
     {

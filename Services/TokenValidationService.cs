@@ -37,4 +37,13 @@ public class TokenValidationService
 
         return result.IsValid;
     }
+
+    public Dictionary<string, string> GetClaims(string idToken)
+    {
+        var handler = new JsonWebTokenHandler();
+        var jwt = handler.ReadJsonWebToken(idToken);
+        var claims = jwt.Claims.ToDictionary(c => c.Type, c => c.Value);
+
+        return claims; 
+    }
 }
