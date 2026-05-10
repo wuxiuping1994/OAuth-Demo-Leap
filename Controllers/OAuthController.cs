@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using OAuthDemoLeap.Models;
 using OAuthDemoLeap.Services;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace OAuthDemoLeap.Controllers
 {
@@ -73,6 +74,20 @@ namespace OAuthDemoLeap.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet("/me")]
+        public IActionResult Me()
+        {
+            var idToken = HttpContext.Session.GetString("id_token");
+            if (idToken == null)
+                return Unauthorized("Not logged in");
+
+            var handler = new JsonWebTokenHandler();
+            var jwt = handler.ReadJsonWebToken(idToken);
+            var claims = jwt.Claims.ToDictionary(c => c.Type, c => c.Value);
+            
+            return Ok(claims);
         }
     }
 }
