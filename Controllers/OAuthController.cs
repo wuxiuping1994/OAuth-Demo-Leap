@@ -6,11 +6,11 @@ namespace OAuthDemoLeap.Controllers
     [ApiController]
     public class OAuthController : ControllerBase
     {
-        private readonly PkceService _pkceService;
-        private readonly TokenExchangeService _tokenExchangeService;
-        private readonly TokenValidationService _tokenValidationService;
+        private readonly IPkceService _pkceService;
+        private readonly ITokenExchangeService _tokenExchangeService;
+        private readonly ITokenValidationService _tokenValidationService;
 
-        public OAuthController(PkceService pkceService, TokenExchangeService tokenExchangeService, TokenValidationService tokenValidationService)
+        public OAuthController(IPkceService pkceService, ITokenExchangeService tokenExchangeService, ITokenValidationService tokenValidationService)
         {
             _pkceService = pkceService;
             _tokenExchangeService = tokenExchangeService;

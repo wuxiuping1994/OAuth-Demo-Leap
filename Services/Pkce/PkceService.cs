@@ -5,7 +5,7 @@ using OAuthDemoLeap.Models;
 
 namespace OAuthDemoLeap.Services;
 
-public class PkceService
+public class PkceService : IPkceService
 {
     private readonly OAuthConfiguration _config;
 

@@ -10,9 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<PkceService>();
-builder.Services.AddHttpClient<TokenExchangeService>();
-builder.Services.AddHttpClient<TokenValidationService>();
+builder.Services.AddScoped<IPkceService, PkceService>();
+builder.Services.AddHttpClient<ITokenExchangeService, TokenExchangeService>();
+builder.Services.AddHttpClient<ITokenValidationService, TokenValidationService>();
 
 builder.Services.Configure<OAuthConfiguration>(
     builder.Configuration.GetSection("OAuthConfiguration"));

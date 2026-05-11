@@ -3,7 +3,7 @@ using OAuthDemoLeap.Models;
 
 namespace OAuthDemoLeap.Services;
 
-public class TokenExchangeService
+public class TokenExchangeService : ITokenExchangeService
 {
     private readonly HttpClient _httpClient;
     private readonly OAuthConfiguration _config;
@@ -31,7 +31,7 @@ public class TokenExchangeService
         {
             throw new Exception("Empty token response");
         }
-        
+
         return tokenResponse;
     }
 }

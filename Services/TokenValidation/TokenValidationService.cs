@@ -5,7 +5,7 @@ using OAuthDemoLeap.Models;
 
 namespace OAuthDemoLeap.Services;
 
-public class TokenValidationService
+public class TokenValidationService : ITokenValidationService
 {
     private readonly OAuthConfiguration _config;
     private readonly HttpClient _httpClient;
@@ -44,6 +44,6 @@ public class TokenValidationService
         var jwt = handler.ReadJsonWebToken(idToken);
         var claims = jwt.Claims.ToDictionary(c => c.Type, c => c.Value);
 
-        return claims; 
+        return claims;
     }
 }
