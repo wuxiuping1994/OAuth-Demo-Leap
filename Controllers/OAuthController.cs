@@ -75,12 +75,15 @@ namespace OAuthDemoLeap.Controllers
         }
 
         [HttpGet("/api/data")]
-        public IActionResult GetData()
+        public async Task<IActionResult> GetData()
         {
             var storedAccessToken = HttpContext.Session.GetString("access_token");
             if (storedAccessToken == null)
                 return Unauthorized();
 
+            var isValid = await _tokenValidationService.ValidateToken(storedAccessToken);
+            if (!isValid)
+                return Unauthorized("Access token expired or invalid");
             return Ok("You're authorized");
         }
     }
