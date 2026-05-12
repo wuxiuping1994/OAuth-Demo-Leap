@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using OAuthDemoLeap.Models;
 
-namespace OAuthDemoLeap.Services;
+namespace OAuthDemoLeap.Services.TokenExchangeService;
 
 public class TokenExchangeService : ITokenExchangeService
 {

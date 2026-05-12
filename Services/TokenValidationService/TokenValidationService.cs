@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using OAuthDemoLeap.Models;
 
-namespace OAuthDemoLeap.Services;
+namespace OAuthDemoLeap.Services.TokenValidationService;
 
 public class TokenValidationService : ITokenValidationService
 {
@@ -26,9 +26,9 @@ public class TokenValidationService : ITokenValidationService
             ValidIssuer = _config.Issuer,
             ValidAudience = _config.ClientId,
             IssuerSigningKeys = jwks.GetSigningKeys(),
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
+            ValidateIssuer = true,  //checks iss
+            ValidateAudience = true,  //checks aud
+            ValidateLifetime = true,  //checks exp
             ValidateIssuerSigningKey = true
         };
 

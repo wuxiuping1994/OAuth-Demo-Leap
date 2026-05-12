@@ -1,4 +1,4 @@
-namespace OAuthDemoLeap.Services;
+namespace OAuthDemoLeap.Services.TokenValidationService;
 
 public interface ITokenValidationService
 {

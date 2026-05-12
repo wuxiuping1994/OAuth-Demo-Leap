@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using OAuthDemoLeap.Services;
+using Microsoft.Extensions.Options;
+using OAuthDemoLeap.Models;
+using OAuthDemoLeap.Services.PkceService;
+using OAuthDemoLeap.Services.TokenExchangeService;
+using OAuthDemoLeap.Services.TokenValidationService;
 
 namespace OAuthDemoLeap.Controllers
 {
@@ -9,12 +13,14 @@ namespace OAuthDemoLeap.Controllers
         private readonly IPkceService _pkceService;
         private readonly ITokenExchangeService _tokenExchangeService;
         private readonly ITokenValidationService _tokenValidationService;
+        private readonly OAuthConfiguration _config;
 
-        public OAuthController(IPkceService pkceService, ITokenExchangeService tokenExchangeService, ITokenValidationService tokenValidationService)
+        public OAuthController(IPkceService pkceService, ITokenExchangeService tokenExchangeService, ITokenValidationService tokenValidationService, IOptions<OAuthConfiguration> options)
         {
             _pkceService = pkceService;
             _tokenExchangeService = tokenExchangeService;
             _tokenValidationService = tokenValidationService;
+            _config = options.Value;
         }
 
         [HttpGet("/login")]
@@ -26,7 +32,7 @@ namespace OAuthDemoLeap.Controllers
             HttpContext.Session.SetString("oauth_state", state);
             HttpContext.Session.SetString("pkce_code_verifier", codeVerifier);
 
-            var url = _pkceService.GenerateRedirectUri(codeChallenge, state);
+            var url = $"{_config.AuthorizationEndpoint}?response_type=code&client_id={_config.ClientId}&redirect_uri={Uri.EscapeDataString(_config.RedirectUri!)}&scope={_config.Scope}&code_challenge={codeChallenge}&state={state}&code_challenge_method=S256";
             return Redirect(url);
         }
 
@@ -72,6 +78,16 @@ namespace OAuthDemoLeap.Controllers
 
             var claims = _tokenValidationService.GetClaims(idToken);
             return Ok(claims);
+        }
+
+        [HttpGet("/logout")]
+        public IActionResult Logout()
+        {
+            var idToken = HttpContext.Session.GetString("id_token");
+            HttpContext.Session.Clear();
+            var logoutUrl = $"{_config.EndSessionEndpoint}?id_token_hint={idToken}&post_logout_redirect_uri={Uri.EscapeDataString(_config.RedirectUri!.Replace("/callback", "/login"))}";
+            
+            return Redirect(logoutUrl);
         }
 
         [HttpGet("/api/data")]

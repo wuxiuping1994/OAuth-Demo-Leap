@@ -1,6 +1,6 @@
 using OAuthDemoLeap.Models;
 
-namespace OAuthDemoLeap.Services;
+namespace OAuthDemoLeap.Services.TokenExchangeService;
 
 public interface ITokenExchangeService
 {

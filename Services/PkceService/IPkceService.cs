@@ -1,8 +1,7 @@
-namespace OAuthDemoLeap.Services;
+namespace OAuthDemoLeap.Services.PkceService;
 
 public interface IPkceService
 {
     (string CodeVerifier, string CodeChallenge) GeneratePkce();
     string GenerateState();
-    string GenerateRedirectUri(string codeChallenge, string state);
 }
