@@ -80,6 +80,19 @@ namespace OAuthDemoLeap.Controllers
             return Ok(claims);
         }
 
+        [HttpGet("/api/data")]
+        public async Task<IActionResult> GetData()
+        {
+            var storedAccessToken = HttpContext.Session.GetString("access_token");
+            if (storedAccessToken == null)
+                return Unauthorized("You're unauthorized to accesss the resources");
+
+            var isValid = await _tokenValidationService.ValidateToken(storedAccessToken);
+            if (!isValid)
+                return Unauthorized("Access token expired or invalid");
+            return Ok("You're authorized");
+        }
+
         [HttpGet("/logout")]
         public IActionResult Logout()
         {
@@ -88,19 +101,6 @@ namespace OAuthDemoLeap.Controllers
             var logoutUrl = $"{_config.EndSessionEndpoint}?id_token_hint={idToken}&post_logout_redirect_uri={Uri.EscapeDataString(_config.RedirectUri!.Replace("/callback", "/login"))}";
             
             return Redirect(logoutUrl);
-        }
-
-        [HttpGet("/api/data")]
-        public async Task<IActionResult> GetData()
-        {
-            var storedAccessToken = HttpContext.Session.GetString("access_token");
-            if (storedAccessToken == null)
-                return Unauthorized();
-
-            var isValid = await _tokenValidationService.ValidateToken(storedAccessToken);
-            if (!isValid)
-                return Unauthorized("Access token expired or invalid");
-            return Ok("You're authorized");
         }
     }
 }

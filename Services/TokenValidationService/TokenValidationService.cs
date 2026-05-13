@@ -26,9 +26,9 @@ public class TokenValidationService : ITokenValidationService
             ValidIssuer = _config.Issuer,
             ValidAudience = _config.ClientId,
             IssuerSigningKeys = jwks.GetSigningKeys(),
-            ValidateIssuer = true,  //checks iss
-            ValidateAudience = true,  //checks aud
-            ValidateLifetime = true,  //checks exp
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true
         };
 
