@@ -66,7 +66,7 @@ namespace OAuthDemoLeap.Controllers
                 return BadRequest("Token exchange failed");
             }
 
-            return Ok();
+            return Ok("Token exchange successful");
         }
 
         [HttpGet("/me")]
@@ -90,7 +90,7 @@ namespace OAuthDemoLeap.Controllers
             var isValid = await _tokenValidationService.ValidateToken(storedAccessToken);
             if (!isValid)
                 return Unauthorized("Access token expired or invalid");
-            return Ok("You're authorized");
+            return Ok("You're authorized to accesss the resources");
         }
 
         [HttpGet("/logout")]

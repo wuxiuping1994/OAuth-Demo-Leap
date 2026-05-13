@@ -42,7 +42,7 @@ Then open `https://localhost:4200/login` in a browser to start the login flow. S
 2. **Complete the callback**
    - After login, the IdP redirects back to `/callback` — you will see `code` and `state` parameters in the URL (e.g. `/callback?code=...&state=...`)
    - The server exchanges the authorization code for tokens and validates the id_token
-   - You will see a `200 OK` response if successful
+   - You will see a `200 OK` response with `Token exchange successful` if successful
 
 3. **View user claims**
    - Navigate to `https://localhost:4200/me`
@@ -50,7 +50,7 @@ Then open `https://localhost:4200/login` in a browser to start the login flow. S
 
 4. **Access protected resource**
    - Navigate to `https://localhost:4200/api/data`
-   - Returns `200 OK` with `"You're authorized"` if the access token is valid
+   - Returns `200 OK` with `"You're authorized to accesss the resources"` if the access token is valid
    - Returns `401 Unauthorized` with `"You're unauthorized to access the resouces"` if not logged in or the token has expired
 
 5. **Logout**
@@ -72,7 +72,7 @@ The id_token is validated in `/callback` using `Microsoft.IdentityModel.JsonWebT
 - Audience
 - Token lifetime (expiry)
 
-This is the only third-party library used, for token validation which would be unsafe to implement manually.
+This is the only third-party library used.
 
 ### Token Storage
 
@@ -84,11 +84,11 @@ Tokens are stored exclusively in **server-side session** (backed by `IDistribute
 
 - **In-memory cache only:** The default `IDistributedMemoryCache` is per-process. Tokens are lost on server restart and this does not work across multiple instances. This was chosen for simplicity in a demo context, as configuring a distributed cache (e.g., Redis) or external database is out of scope. A production deployment would replace this with a distributed cache.
 - **No token refresh:** The access token is stored but its expiry is not tracked. Once expired, the user must log in again. The IdP did not return a refresh token in the token response, so automatic token renewal is not possible. A production implementation would request the `offline_access` scope to obtain a refresh token, and exchange it for new tokens when the access token expires.
-- **Logout implementation:** The IdP's discovery document exposes an `end_session_endpoint`, and since a complete authentication lifecycle should include logout, a `/logout` endpoint was implemented. It clears the server session and redirects to the IdP's `end_session_endpoint` with `id_token_hint` to terminate the IdP session. Without terminating the IdP session, the IdP would silently re-authenticate the user on the next `/login` visit.
-- **Full claims exposure:** `/me` returns all claims from the id_token directly. In a production environment, a DTO would be used to expose only the fields the application needs (e.g. `sub`, `email`, `firstName`), avoiding accidental exposure of internal claims. This was kept as-is for development visibility.
-- **Detailed error responses:** Error responses include specific messages (e.g. `"Invalid state"`, `"Session expired"`) to aid development and demonstration. In a production environment, these would be replaced with generic messages to avoid leaking implementation details to potential attackers.
+- **Logout implementation:** The IdP's discovery document exposes an `end_session_endpoint`, so a `/logout` endpoint was implemented to complete the full authentication lifecycle and to make manual end-to-end testing easier. It clears the server session and redirects to the IdP's `end_session_endpoint` with `id_token_hint` to terminate the IdP session. Without terminating the IdP session, the IdP would silently re-authenticate the user on the next `/login` visit.
+- **Full claims exposure:** `/me` returns all claims from the id_token directly. In a production environment, a DTO would be used to expose only the fields the application needs (e.g. `sub`, `email`, `firstName`), avoiding accidental exposure of internal claims. In a demo context, returning all claims provides a clear view of what the IdP issues
+- **Detailed error responses:** Error responses include specific messages (e.g. `"Invalid state"`, `"Session expired"`) to assist development and demonstration. In a production environment, these would be replaced with generic messages to avoid leaking implementation details to potential attackers.
 - **Claims from id_token:** `/me` returns claims decoded from the id_token
   rather than calling the UserInfo endpoint. This avoids an additional
   network request on every `/me` call. The trade-off is that claims reflect the user's profile at login time. A production implementation with stricter freshness
   requirements would call the UserInfo endpoint instead.
-  - **No unit tests:** The service layer is either thin wrappers over HTTP calls (`TokenExchangeService`) or delegates entirely to a third-party library (`TokenValidationService`). The most testable logic is in the controller, but mocking `HttpContext.Session` adds more boilerplate than the logic being tested. The OAuth flow was verified manually end-to-end.
+- **No unit tests:** The service layer is either thin wrappers over HTTP calls (`TokenExchangeService`) or delegates entirely to a third-party library (`TokenValidationService`). The most testable logic is in the controller, but mocking `HttpContext.Session` adds more boilerplate than the logic being tested. The OAuth flow was verified manually end-to-end.
