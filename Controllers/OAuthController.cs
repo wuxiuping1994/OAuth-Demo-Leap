@@ -55,7 +55,7 @@ namespace OAuthDemoLeap.Controllers
                 var tokenResponse = await _tokenExchangeService.ExchangeAsync(code, codeVerifier);
 
                 if (tokenResponse.AccessToken == null || tokenResponse.IdToken == null)
-                    return BadRequest("Incomplete token response from IdP");
+                    return StatusCode(502, "Incomplete token response from IdP");
 
                 var idTokenValidated = await _tokenValidationService.ValidateToken(tokenResponse.IdToken);
                 if (!idTokenValidated)
