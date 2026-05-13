@@ -53,13 +53,16 @@ namespace OAuthDemoLeap.Controllers
             try
             {  
                 var tokenResponse = await _tokenExchangeService.ExchangeAsync(code, codeVerifier);
-                var idTokenValidated = await _tokenValidationService.ValidateToken(tokenResponse.IdToken!);
 
+                if (tokenResponse.AccessToken == null || tokenResponse.IdToken == null)
+                    return BadRequest("Incomplete token response from IdP");
+
+                var idTokenValidated = await _tokenValidationService.ValidateToken(tokenResponse.IdToken);
                 if (!idTokenValidated)
                     return Unauthorized("Invalid id_token");
 
-                HttpContext.Session.SetString("access_token", tokenResponse.AccessToken!);
-                HttpContext.Session.SetString("id_token", tokenResponse.IdToken!);
+                HttpContext.Session.SetString("access_token", tokenResponse.AccessToken);
+                HttpContext.Session.SetString("id_token", tokenResponse.IdToken);
             }
             catch (HttpRequestException)
             {
